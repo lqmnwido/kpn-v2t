@@ -1,0 +1,11 @@
+/python/diarization-venv/
+/python/venv/
+__pycache__/
+*.pyc
+/target/
+/work/
+/.env
+/.env.*
+!/.env.example
+/TRANSCRIPTION.md
+/.aws/

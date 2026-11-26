@@ -1,0 +1,6 @@
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.8.0+cu128
+torchaudio==2.8.0+cu128
+nvidia-cublas-cu12; sys_platform == "linux"
+nvidia-cudnn-cu12>=9,<10; sys_platform == "linux"
+torchvision==0.23.0+cu128

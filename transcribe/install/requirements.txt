@@ -1,0 +1,2 @@
+# Shared ASR application dependencies stay in python/ for existing deployments.
+-r ../python/requirements.txt

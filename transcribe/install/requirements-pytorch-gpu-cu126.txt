@@ -1,0 +1,7 @@
+--extra-index-url https://download.pytorch.org/whl/cu126
+torch==2.8.0+cu126
+torchaudio==2.8.0+cu126
+# Faster-Whisper loads these CUDA 12 / cuDNN 9 libraries at runtime.
+nvidia-cublas-cu12; sys_platform == "linux"
+nvidia-cudnn-cu12>=9,<10; sys_platform == "linux"
+torchvision==0.23.0+cu126

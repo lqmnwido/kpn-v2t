@@ -1,0 +1,23 @@
+# Data and Utility
+# - numpy<2.0: Fundamental scientific computing; arrays used as data exchange format.
+# - soundfile: High-level reading/writing of audio files into numerical format.
+# - minio: SDK for object storage (fetching/uploading audio and artifacts).
+# - requests: HTTP client for API communication and reporting status.
+# - scikit-learn: Machine learning algorithms (specifically clustering for speaker diarization).
+# - librosa: Advanced audio analysis for feature extraction (pitch, MFCCs, etc).
+numpy<2.0
+soundfile
+minio
+requests
+scikit-learn
+librosa
+
+# Speech Processing
+# - faster-whisper: Optimized implementation of OpenAI's Whisper for ASR.
+# - speechbrain: Advanced toolkit for speaker recognition and diarization.
+# - silero-vad: Lightweight, high-accuracy Voice Activity Detection.
+faster-whisper
+speechbrain
+silero-vad
+
+python-dotenv

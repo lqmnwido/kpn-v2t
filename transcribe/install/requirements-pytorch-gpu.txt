@@ -1,0 +1,2 @@
+# Default manual GPU profile: CUDA 12.6. Use setup_gpu.sh for auto-selection.
+-r requirements-pytorch-gpu-cu126.txt

@@ -1,0 +1,30 @@
+spring:
+  config:
+    import:
+      - "optional:file:./transcribe/.env[.properties]"
+      - "optional:file:${KPN_TRANSCRIBE_ENV:../transcribe/.env}[.properties]"
+      - "optional:file:./.env[.properties]"
+      - "optional:file:./kpn-output/.env[.properties]"
+  application:
+    name: kpn-output
+  temporal:
+    namespace: ${TEMPORAL_NAMESPACE:default}
+    connection:
+      target: ${TEMPORAL_TARGET:127.0.0.1:7233}
+  # PostgreSQL settings shared with asr-api, which owns the job database connection.
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://127.0.0.1:5432/asr_db}
+    username: ${SPRING_DATASOURCE_USERNAME:asr_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+
+app:
+  minio:
+    url: ${MINIO_URL:http://127.0.0.1:9000}
+    access-key: ${MINIO_ACCESS_KEY:}
+    secret-key: ${MINIO_SECRET_KEY:}
+    bucket: ${MINIO_BUCKET:asr-poc}
+  ollama:
+    host: ${OLLAMA_HOST:http://127.0.0.1:11434}
+    model: ${KPN_OLLAMA_MODEL:${OLLAMA_MODEL:}}
+  report:
+    python-executable: ${KPN_PYTHON_EXECUTABLE:python3}

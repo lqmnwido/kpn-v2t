@@ -1,0 +1,45 @@
+server:
+  port: ${ASR_API_PORT:8081}
+
+spring:
+  config:
+    import: "optional:file:../transcribe/.env[.properties]"
+  application:
+    name: asr-api
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://127.0.0.1:5432/asr_db}
+    username: ${SPRING_DATASOURCE_USERNAME:asr_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  servlet:
+    multipart:
+      max-file-size: 2GB
+      max-request-size: 2GB
+  temporal:
+    namespace: ${TEMPORAL_NAMESPACE:default}
+    connection:
+      target: ${TEMPORAL_TARGET:127.0.0.1:7233}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  temporal:
+    workflow-task-queue: ${TEMPORAL_WORKFLOW_TASK_QUEUE:ASR_WORKFLOW_QUEUE}
+    media-task-queue: ${TEMPORAL_MEDIA_TASK_QUEUE:MEDIA_TASK_QUEUE}
+    asr-task-queue: ${TEMPORAL_ASR_TASK_QUEUE:ASR_TASK_QUEUE}
+    analysis-task-queue: ${TEMPORAL_ANALYSIS_TASK_QUEUE:ANALYSIS_TASK_QUEUE}
+  minio:
+    url: ${MINIO_URL:http://127.0.0.1:9000}
+    access-key: ${MINIO_ACCESS_KEY:}
+    secret-key: ${MINIO_SECRET_KEY:}
+    bucket: ${MINIO_BUCKET:asr-poc}

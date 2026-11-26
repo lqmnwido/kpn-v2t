@@ -1,0 +1,52 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  config:
+    import: "optional:file:./.env[.properties]"
+  application:
+    name: temporal-worker
+  temporal:
+    namespace: ${TEMPORAL_NAMESPACE:default}
+    connection:
+      target: ${TEMPORAL_TARGET:127.0.0.1:7233}
+    workers:
+      - name: workflowWorker
+        task-queue: ${TEMPORAL_WORKFLOW_TASK_QUEUE:ASR_WORKFLOW_QUEUE}
+        workflow-classes:
+          - com.example.asr.worker.workflow.AsrWorkflowImpl
+      - name: mediaWorker
+        task-queue: ${TEMPORAL_MEDIA_TASK_QUEUE:MEDIA_TASK_QUEUE}
+        activity-beans:
+          - mediaActivitiesImpl
+      - name: asrWorker
+        task-queue: ${TEMPORAL_ASR_TASK_QUEUE:ASR_TASK_QUEUE}
+        activity-beans:
+          - asrActivitiesImpl
+          - diarizationActivitiesImpl
+          - speakerRefinementActivitiesImpl
+          - lockActivitiesImpl
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  minio:
+    url: ${MINIO_URL:http://127.0.0.1:9000}
+    access-key: ${MINIO_ACCESS_KEY}
+    secret-key: ${MINIO_SECRET_KEY}
+    bucket: ${MINIO_BUCKET:asr-poc}
+  ollama:
+    host: ${OLLAMA_HOST:http://127.0.0.1:11434}
+    model: ${OLLAMA_MODEL:llama3.2:3b}
+  tools:
+    ffmpeg-path: ${FFMPEG_PATH:/usr/bin/ffmpeg}
+    ffprobe-path: ${FFPROBE_PATH:/usr/bin/ffprobe}
+    python-executable: ${PYTHON_EXECUTABLE:python}
+    diarize-script-path: ${DIARIZE_SCRIPT_PATH:python/diarize_and_match.py}
+    refine-script-path: ${REFINE_SCRIPT_PATH:python/refine_speakers.py}
+    working-dir: ${ASR_WORK_DIR:/tmp/temporal-asr-poc}
+    chunk-seconds: ${ASR_CHUNK_SECONDS:30}

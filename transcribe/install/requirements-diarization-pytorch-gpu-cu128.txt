@@ -1,0 +1,2 @@
+-r requirements-pytorch-gpu-cu128.txt
+torchcodec==0.7.0

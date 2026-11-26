@@ -1,0 +1,84 @@
+variables:
+  DOCKER_USERNAME: $CI_REGISTRY_USER
+  DOCKER_PASSWORD: $CI_REGISTRY_PASSWORD
+  PROJECT_PATH: $CI_PROJECT_PATH
+  PROJECT_NAME: $CI_PROJECT_NAME
+  IMAGE_NAME: "terung.kai.2enapps.my/${PROJECT_PATH}"
+  GITLAB_TOKEN: $GITLAB_TOKEN
+  GITLAB_TOKEN_PP: $GITLAB_TOKEN_PP
+  PLATFORM: "--platform linux/amd64"
+  TELEGRAM_BOT_TOKEN: $TELEGRAM_BOT_TOKEN
+  TELEGRAM_BOT_CHAT_ID: $TELEGRAM_BOT_CHAT_ID
+  GROUP_TOKEN: $GROUP_TOKEN
+
+stages:
+  - tagdev
+  - builddev
+
+tagdev:
+  stage: tagdev
+  script:
+    - git fetch --tags
+    - OLD_TAG=$(git tag | sort -V | tail -n1)
+
+    - |
+      if [ -z "$OLD_TAG" ]; then
+        OLD_TAG="v0.0.18"
+      fi
+
+    - echo "Old Tag :$OLD_TAG"
+
+    - MAJOR=$(echo "$OLD_TAG" | cut -d. -f1 | tr -d 'v')
+    - MINOR=$(echo "$OLD_TAG" | cut -d. -f2)
+    - PATCH=$(echo "$OLD_TAG" | cut -d. -f3)
+
+    - |
+      if [ "$PATCH" -ge 99 ]; then
+        PATCH=0
+        if [ "$MINOR" -ge 99 ]; then
+          MINOR=0
+          MAJOR=$((MAJOR + 1))
+        else
+          MINOR=$((MINOR + 1))
+        fi
+      else
+        PATCH=$((PATCH + 1))
+      fi
+
+    - NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+    - echo "New Tag :$NEW_TAG"
+
+    - git tag $NEW_TAG
+    - git push https://oauth2:${GROUP_TOKEN}@kai.2enapps.my/d-reams/demo/temporal-worker.git $NEW_TAG
+
+    - echo $NEW_TAG > tagdev.txt
+    - LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+    - echo "Last commit message :$LAST_COMMIT_MSG"
+    - echo "$LAST_COMMIT_MSG" > commit_message.txt
+  only:
+    - main
+  artifacts:
+    paths:
+      - tagdev.txt
+      - commit_message.txt
+
+builddev:
+  stage: builddev
+  needs: [tagdev]
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - free -mh
+    - echo ${PROJECT_PATH}
+    - echo "Fetching the latest tag from Git..."
+    - TAG=$(cat tagdev.txt)
+    - echo "Current Tag :${TAG}"
+    - echo "Logging into GitLab Container Registry"
+    - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}" "${CI_REGISTRY}"
+    - docker buildx build --platform linux/amd64 --provenance=false -t ${IMAGE_NAME}:${TAG} --push .
+    - docker system prune -a -f --volumes
+    - docker builder prune -f
+  only:
+    - main
+

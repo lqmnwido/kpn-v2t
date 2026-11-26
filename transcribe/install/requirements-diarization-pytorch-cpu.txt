@@ -1,0 +1,2 @@
+-r requirements-pytorch-cpu.txt
+torchcodec==0.7.0
